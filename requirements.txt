@@ -1,1 +1,2 @@
 briefcase
+pyinstaller
