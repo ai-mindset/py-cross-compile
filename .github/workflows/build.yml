@@ -1,99 +1,4 @@
-<<<<<<< HEAD
 name: Build and Release
-on:
-  push:
-    tags:
-      - "v*" # Trigger on version tags
-
-jobs:
-  lint:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
-        with:
-          python-version: "3.10"
-          cache: "pip"
-      - run: pip install ruff black
-      - name: Find project directory
-        shell: bash
-        run: |
-          PROJECT_DIR=$(find . -type d -name src -exec dirname {} \; | head -n 1)
-          echo "PROJECT_DIR=$PROJECT_DIR" >> $GITHUB_ENV
-      - run: black --check ${{ env.PROJECT_DIR }}/src
-      - run: ruff check ${{ env.PROJECT_DIR }}
-
-  build:
-    needs: lint
-    strategy:
-      matrix:
-        os: [ubuntu-latest, windows-latest, macos-latest]
-    runs-on: ${{ matrix.os }}
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
-        with:
-          python-version: "3.10"
-          cache: "pip"
-      - run: python -m pip install briefcase
-      
-      - name: Install Linux dependencies
-        if: runner.os == 'Linux'
-        run: sudo apt-get install libgirepository1.0-dev gtk+-3.0-dev python3-dev
- 
-      - name: Install macOS dependencies
-        if: runner.os == 'macOS'
-        run: brew install gobject-introspection gtk+3
- 
-      - name: Find project directory
-        shell: bash
-        run: |
-          PROJECT_DIR=$(find . -type d -name src -exec dirname {} \; | head -n 1)
-          echo "PROJECT_DIR=$PROJECT_DIR" >> $GITHUB_ENV
-          
-      # - run: cd ${{ env.PROJECT_DIR }} && briefcase create
-      - run: cd ${{ env.PROJECT_DIR }} && briefcase build
-      - run: cd ${{ env.PROJECT_DIR }} && briefcase package --adhoc-sign
- 
-      - name: Prepare release files
-        shell: bash
-        run: |
-          mkdir -p release
-          if [ "${{ runner.os }}" = "Linux" ]; then
-            cp ${{ env.PROJECT_DIR }}/dist/*.deb release/
-          elif [ "${{ runner.os }}" = "Windows" ]; then
-            cp ${{ env.PROJECT_DIR }}/dist/*.msi release/
-          elif [ "${{ runner.os }}" = "macOS" ]; then
-            cp ${{ env.PROJECT_DIR }}/dist/*.dmg release/
-          fi
-          
-          cd release
-          for file in *; do
-            if [ -f "$file" ]; then
-              tar -cvf "${file}.tar" "$file"
-              echo "Compressed $file to ${file}.tar"
-            fi
-          done
-          
-          if ls *.tar >/dev/null 2>&1; then
-            echo "release_empty=false" >> $GITHUB_ENV
-            echo "Executables found: $(ls -R)"
-          else
-            echo "No files found"
-            echo "release_empty=true" >> $GITHUB_ENV
-          fi
- 
-      - name: Upload binaries to release
-        if: env.release_empty == 'false'
-        uses: svenstaro/upload-release-action@v2
-        with:
-          repo_token: ${{ secrets.GITHUB_TOKEN }}
-          file: release/*.tar
-          tag: ${{ github.ref_name }}
-          overwrite: true
-          file_glob: true
-=======
-name: Build
 on: [push]
 
 jobs:
@@ -142,7 +47,7 @@ jobs:
          PROJECT_DIR=$(find . -type d -name src -exec dirname {} \; | head -n 1)
          echo "PROJECT_DIR=$PROJECT_DIR" >> $GITHUB_ENV
          
-     - run: cd ${{ env.PROJECT_DIR }} && briefcase create
+     # - run: cd ${{ env.PROJECT_DIR }} && briefcase create
      - run: cd ${{ env.PROJECT_DIR }} && briefcase build
      - run: cd ${{ env.PROJECT_DIR }} && briefcase package --adhoc-sign
      - uses: actions/upload-artifact@v4
@@ -152,4 +57,3 @@ jobs:
            ${{ env.PROJECT_DIR }}/dist/*.deb
            ${{ env.PROJECT_DIR }}/dist/*.msi
            ${{ env.PROJECT_DIR }}/dist/*.dmg
->>>>>>> parent of c9c14ef (add: release)
