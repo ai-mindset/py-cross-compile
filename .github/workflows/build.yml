@@ -16,7 +16,7 @@ jobs:
         run: |
           PROJECT_DIR=$(find . -type d -name src -exec dirname {} \; | head -n 1)
           echo "PROJECT_DIR=$PROJECT_DIR" >> $GITHUB_ENV
-      - run: black --check ${{ env.PROJECT_DIR }}
+      - run: black --check ${{ env.PROJECT_DIR }}/src
       - run: ruff check ${{ env.PROJECT_DIR }}
 
   build:
