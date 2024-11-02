@@ -33,7 +33,7 @@ jobs:
           cache: "pip"
       - run: python -m pip install briefcase
       - name: Install dependencies
-        run: sudo apt install libgirepository1.0-dev
+        run: sudo apt-get install libgirepository1.0-dev
       - name: Find project directory
         shell: bash
         run: |
