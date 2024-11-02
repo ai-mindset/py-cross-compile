@@ -34,11 +34,11 @@ jobs:
       - run: python -m pip install briefcase
 
       - name: Install Linux dependencies
-        if: runner.os == "Linux"
+        if: ${{ matrix.os }} == "Linux"
         run: sudo apt-get install libgirepository1.0-dev
 
       - name: Install macOS dependencies
-        if: runner.os == "macOS"
+        if: ${{ matrix.os }} == "macOS"
         run: brew install gobject-introspection gtk+3
 
       # Windows doesn't need additional deps for Briefcase      
