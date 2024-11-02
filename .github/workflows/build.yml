@@ -62,19 +62,26 @@ jobs:
            ${{ env.PROJECT_DIR }}/dist/*.msi
            ${{ env.PROJECT_DIR }}/dist/*.dmg
 
- release:
-   needs: build
-   runs-on: ubuntu-latest
-   steps:
-     - uses: actions/download-artifact@v4
-       with:
-         path: artifacts
-         
-     - name: Create Release
-       uses: softprops/action-gh-release@v1
-       with:
-         files: |
-           artifacts/**/*.deb
-           artifacts/**/*.msi
-           artifacts/**/*.dmg
-         generate_release_notes: true
+  release:
+    needs: build
+    runs-on: ubuntu-latest
+    permissions: # Add this
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      
+      - uses: actions/download-artifact@v4
+        with:
+          merge-multiple: true # Add this
+          path: dist
+          
+      - name: Create Release
+        uses: softprops/action-gh-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          files: |
+            dist/binaries-ubuntu-latest/*.deb
+            dist/binaries-windows-latest/*.msi
+            dist/binaries-macos-latest/*.dmg
+          generate_release_notes: true
