@@ -1,6 +1,6 @@
 # py-cross-compile
 
-[![Build](https://github.com/<my gh handle>/py-cross-compile/actions/workflows/build.yml/badge.svg)](https://github.com/<my gh handle>/py-cross-compile/actions/workflows/build.yml)
+[![Build](https://github.com/ai-mindset/py-cross-compile/actions/workflows/build.yml/badge.svg)](https://github.com/ai-mindset/py-cross-compile/actions/workflows/build.yml)
 
 Cross-platform Python application builder that creates native executables for Windows (.msi), macOS (.dmg), and Linux (.deb) using BeeWare and GitHub Actions.
 
