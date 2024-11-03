@@ -1,59 +1,118 @@
-name: Build and Release
-on: [push]
+name: PyInstaller Build and Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
 
 jobs:
- lint:
-   runs-on: ubuntu-latest
-   steps:
-     - uses: actions/checkout@v4
-     - uses: actions/setup-python@v5
-       with:
-         python-version: "3.10"
-         cache: "pip"
-     - run: pip install ruff black
-     - name: Find project directory
-       shell: bash
-       run: |
-         PROJECT_DIR=$(find . -type d -name src -exec dirname {} \; | head -n 1)
-         echo "PROJECT_DIR=$PROJECT_DIR" >> $GITHUB_ENV
-     - run: black --check ${{ env.PROJECT_DIR }}/src
-     - run: ruff check ${{ env.PROJECT_DIR }}
+  build:
+    strategy:
+      matrix:
+        include:
+          - os: ubuntu-latest
+            platform: linux
+            arch: x86_64
+          - os: ubuntu-latest
+            platform: linux
+            arch: aarch64
+          - os: ubuntu-latest
+            platform: windows
+            arch: x86_64
+          - os: ubuntu-latest
+            platform: macos
+            arch: x86_64
+          - os: ubuntu-latest
+            platform: macos
+            arch: arm64
 
- build:
-   needs: lint
-   strategy:
-     matrix:
-       os: [ubuntu-latest, windows-latest, macos-latest]
-   runs-on: ${{ matrix.os }}
-   steps:
-     - uses: actions/checkout@v4
-     - uses: actions/setup-python@v5
-       with:
-         python-version: "3.10"
-         cache: "pip"
-     - run: python -m pip install briefcase
-     
-     - name: Install Linux dependencies
-       if: runner.os == 'Linux'
-       run: sudo apt-get install libgirepository1.0-dev gtk+-3.0-dev python3-dev
+    runs-on: ${{ matrix.os }}
 
-     - name: Install macOS dependencies
-       if: runner.os == 'macOS'
-       run: brew install gobject-introspection gtk+3
+    steps:
+      - uses: actions/checkout@v4
 
-     - name: Find project directory
-       shell: bash
-       run: |
-         PROJECT_DIR=$(find . -type d -name src -exec dirname {} \; | head -n 1)
-         echo "PROJECT_DIR=$PROJECT_DIR" >> $GITHUB_ENV
-         
-     # - run: cd ${{ env.PROJECT_DIR }} && briefcase create
-     - run: cd ${{ env.PROJECT_DIR }} && briefcase build
-     - run: cd ${{ env.PROJECT_DIR }} && briefcase package --adhoc-sign
-     - uses: actions/upload-artifact@v4
-       with:
-         name: binaries-${{ matrix.os }}
-         path: |
-           ${{ env.PROJECT_DIR }}/dist/*.deb
-           ${{ env.PROJECT_DIR }}/dist/*.msi
-           ${{ env.PROJECT_DIR }}/dist/*.dmg
+      - name: Set up Python 3.12
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: 'pip'  # Enables pip caching for faster builds
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip setuptools wheel
+          pip install pyinstaller
+          pip install -r requirements.txt
+
+      - name: Set up QEMU
+        if: matrix.arch == 'aarch64' || matrix.arch == 'arm64'
+        uses: docker/setup-qemu-action@v3
+        with:
+          platforms: arm64
+
+      - name: Install cross-compilation tools
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y mingw-w64 gcc-aarch64-linux-gnu
+
+      - name: Build with PyInstaller
+        env:
+          PLATFORM: ${{ matrix.platform }}
+          ARCH: ${{ matrix.arch }}
+        run: |
+          if [ "$PLATFORM" = "windows" ]; then
+            pyinstaller --clean --onefile --windowed \
+              --target-architecture x86_64 \
+              --name "app-$PLATFORM-$ARCH" \
+              --add-binary "resources/*:resources" \
+              main.py
+          elif [ "$PLATFORM" = "macos" ]; then
+            pyinstaller --clean --onefile \
+              --target-architecture $ARCH \
+              --name "app-$PLATFORM-$ARCH" \
+              --add-binary "resources/*:resources" \
+              main.py
+          else
+            pyinstaller --clean --onefile \
+              --target-architecture $ARCH \
+              --name "app-$PLATFORM-$ARCH" \
+              --add-binary "resources/*:resources" \
+              main.py
+          fi
+
+      - name: Create ZIP archive
+        run: |
+          cd dist
+          if [ "${{ matrix.platform }}" = "windows" ]; then
+            zip "app-${{ matrix.platform }}-${{ matrix.arch }}.zip" "app-${{ matrix.platform }}-${{ matrix.arch }}.exe"
+          else
+            zip "app-${{ matrix.platform }}-${{ matrix.arch }}.zip" "app-${{ matrix.platform }}-${{ matrix.arch }}"
+          fi
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: app-${{ matrix.platform }}-${{ matrix.arch }}
+          path: dist/app-${{ matrix.platform }}-${{ matrix.arch }}.zip
+
+  release:
+    needs: build
+    runs-on: ubuntu-latest
+    if: startsWith(github.ref, 'refs/tags/')
+
+    steps:
+      - name: Download all artifacts
+        uses: actions/download-artifact@v4
+
+      - name: Create Release
+        id: create_release
+        uses: softprops/action-gh-release@v1
+        with:
+          name: Release ${{ github.ref_name }}
+          draft: false
+          prerelease: false
+          generate_release_notes: true
+          files: |
+            */app-*.zip
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
