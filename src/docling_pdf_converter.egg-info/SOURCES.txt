@@ -1,0 +1,13 @@
+LICENSE
+README.md
+pyproject.toml
+src/docling_converter/__about__.py
+src/docling_converter/__init__.py
+src/docling_converter/app.py
+src/docling_pdf_converter.egg-info/PKG-INFO
+src/docling_pdf_converter.egg-info/SOURCES.txt
+src/docling_pdf_converter.egg-info/dependency_links.txt
+src/docling_pdf_converter.egg-info/entry_points.txt
+src/docling_pdf_converter.egg-info/requires.txt
+src/docling_pdf_converter.egg-info/top_level.txt
+tests/test_app.py

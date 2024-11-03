@@ -1,0 +1,2 @@
+[console_scripts]
+docling-converter = docling_converter.app:main
