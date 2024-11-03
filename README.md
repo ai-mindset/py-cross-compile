@@ -1,8 +1,10 @@
 # Docling PDF to Markdown Converter
 
-[![Code Quality](https://github.com/yourusername/docling-pdf-converter/workflows/Code%20Quality/badge.svg)](https://github.com/yourusername/docling-pdf-converter/actions)
-[![Tests](https://github.com/yourusername/docling-pdf-converter/workflows/Tests/badge.svg)](https://github.com/yourusername/docling-pdf-converter/actions)
-[![PyInstaller Build and Release](https://github.com/yourusername/docling-pdf-converter/workflows/PyInstaller%20Build%20and%20Release/badge.svg)](https://github.com/yourusername/docling-pdf-converter/actions)
+[![Code Quality](https://github.com/ai-mindset/py-cross-compile/actions/workflows/code-quality.yml/badge.svg)](https://github.com/ai-mindset/py-cross-compile/actions/workflows/code-quality.yml)
+[![PyInstaller Build and Release](https://github.com/ai-mindset/py-cross-compile/actions/workflows/build-release.yml/badge.svg)](https://github.com/ai-mindset/py-cross-compile/actions/workflows/build-release.yml)
+[![Tests](https://github.com/ai-mindset/py-cross-compile/actions/workflows/tests.yml/badge.svg)](https://github.com/ai-mindset/py-cross-compile/actions/workflows/tests.yml)
+[![Ruff](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ruff/main/assets/badge/v2.json)](https://github.com/astral-sh/ruff)
+
 
 A GUI application for converting PDF documents to Markdown using Docling. This project primarily serves as an experiment in cross-compilation using GitHub Actions, demonstrating how to build Python applications for multiple platforms from a single Linux environment.
 
