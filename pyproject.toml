@@ -99,16 +99,14 @@ target-version = "py312"
 line-length = 88
 src = ["src", "tests"]
 
-select = ["ALL"]
+[tool.ruff.lint]
+select = ["E", "F", "B", "Q", "I", "N", "W", "C90", "UP", "ASYNC", "S", "BLE"]
 ignore = [
     "D203",
     "D212",
     "ANN101",
     "ANN102",
 ]
-
-[tool.ruff.lint]
-select = ["E", "F", "B", "Q", "I", "N", "W", "C90", "UP", "ASYNC", "S", "BLE"]
 fixable = ["I", "F", "W", "UP", "Q"]
 unfixable = ["B"]
 

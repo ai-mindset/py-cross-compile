@@ -6,7 +6,6 @@ Handles PDF conversion with proper stream handling.
 import logging
 import os
 import sys
-import threading
 import tkinter as tk
 from functools import partial, wraps
 from io import BytesIO
@@ -172,7 +171,7 @@ def conversion_complete(
         ui_elements["save_btn"].configure(state="normal")
         ui_elements["progress"].stop()
         ui_elements["progress"].grid_remove()
-    except Exception as e:
+    except Exception as e:  # noqa: BLE001
         logging.error(f"Error completing conversion: {str(e)}")
         messagebox.showerror("Error", "Failed to display conversion results")
 
@@ -227,7 +226,7 @@ def save_markdown(
                     f.write(content[i : i + chunk_size])
             status_var.set("File saved successfully!")
             logging.info(f"Markdown saved to: {file_path}")
-        except Exception as e:
+        except Exception as e:  # noqa: BLE001
             error_msg = f"Error saving file: {str(e)}"
             status_var.set(error_msg)
             logging.error(error_msg)
@@ -344,7 +343,7 @@ def main() -> None:
     try:
         root = create_ui()
         root.mainloop()
-    except Exception as e:
+    except Exception as e:  # noqa: BLE001
         logging.critical(f"Application error: {str(e)}", exc_info=True)
         messagebox.showerror("Critical Error", "Application failed to start properly")
         sys.exit(1)
