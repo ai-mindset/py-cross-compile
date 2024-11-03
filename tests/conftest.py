@@ -8,17 +8,44 @@ from tkinter.scrolledtext import ScrolledText
 import pytest
 from pytest import FixtureRequest, TempPathFactory
 
+from .test_helpers import create_test_root
+
 
 @pytest.fixture
 def tmp_path(request: FixtureRequest, tmp_path_factory: TempPathFactory) -> Path:
-    """
-    Built-in pytest fixture that provides a unique temporary directory.
-    Explicitly documented here for code clarity.
-
-    Returns:
-        Path: Path to a unique temporary directory that is cleaned up after the test
-    """
+    """Built-in pytest fixture that provides a unique temporary directory."""
     return tmp_path_factory.mktemp("data")
+
+
+@pytest.fixture
+def mock_ui():
+    """Fixture providing UI elements without requiring a display."""
+    root = create_test_root()
+
+    status_var = tk.StringVar()
+    output_text = ScrolledText(root)
+    select_btn = ttk.Button(root)
+    save_btn = ttk.Button(root)
+    progress = ttk.Progressbar(root)
+
+    # Initialize widget states
+    select_btn.configure(state="normal")
+    save_btn.configure(state="disabled")
+
+    ui_elements = {
+        "root": root,
+        "select_btn": select_btn,
+        "save_btn": save_btn,
+        "progress": progress,
+        "output_text": output_text,
+    }
+
+    yield root, status_var, output_text, ui_elements
+
+    try:
+        root.destroy()
+    except:
+        pass
 
 
 @pytest.fixture
