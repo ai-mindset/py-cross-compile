@@ -60,9 +60,9 @@ def test_setup_converter():
 
 
 @patch("docling_converter.app.DocumentConverter")
-def test_convert_pdf_thread(mock_converter, ui_setup, sample_pdf):
+def test_convert_pdf_thread(mock_converter, mock_ui, sample_pdf):
     """Test PDF conversion thread."""
-    root, status_var, _, ui_elements = ui_setup
+    root, status_var, _, ui_elements = mock_ui
 
     # Mock converter
     mock_instance = Mock()
@@ -78,9 +78,9 @@ def test_convert_pdf_thread(mock_converter, ui_setup, sample_pdf):
     mock_instance.convert.assert_called_once()
 
 
-def test_conversion_complete(ui_setup):
+def test_conversion_complete(mock_ui):
     """Test successful conversion handling."""
-    root, status_var, _, ui_elements = ui_setup
+    root, status_var, _, ui_elements = mock_ui
 
     test_markdown = "# Test Markdown"
     conversion_complete(test_markdown, status_var, ui_elements)
@@ -146,9 +146,39 @@ def test_select_pdf(mock_convert, ui_setup, sample_pdf):
 
 
 @pytest.fixture
+def mock_ui_elements():
+    """Fixture providing mocked UI elements with headless configuration."""
+    root = tk.Tk()
+    root.withdraw()  # Hide the root window
+
+    status_var = tk.StringVar(value="Initial state")
+    output_text = ScrolledText(root)
+    select_btn = ttk.Button(root)
+    save_btn = ttk.Button(root)
+    progress = ttk.Progressbar(root)
+
+    # Initialize widget states
+    select_btn.configure(state="normal")
+    save_btn.configure(state="disabled")
+    progress.grid_remove()
+
+    ui_elements = {
+        "root": root,
+        "output_text": output_text,
+        "select_btn": select_btn,
+        "save_btn": save_btn,
+        "progress": progress,
+    }
+
+    yield root, status_var, output_text, ui_elements
+    root.destroy()
+
+
+@pytest.fixture
 def ui_root():
-    """Fixture providing the UI root for testing."""
+    """Fixture providing the UI root for testing in headless mode."""
     root = create_ui()
+    root.withdraw()  # Hide the root window
     yield root
     root.destroy()
 
@@ -240,33 +270,6 @@ def test_widget_layout_order(ui_root):
         assert actual == expected
 
 
-@pytest.fixture
-def mock_ui_elements():
-    """Fixture providing mocked UI elements."""
-    root = tk.Tk()
-    status_var = tk.StringVar(value="Initial state")
-    output_text = ScrolledText(root)
-    select_btn = ttk.Button(root)
-    save_btn = ttk.Button(root)
-    progress = ttk.Progressbar(root)
-
-    # Initialize widget states
-    select_btn.configure(state="normal")
-    save_btn.configure(state="disabled")
-    progress.grid_remove()
-
-    ui_elements = {
-        "root": root,
-        "output_text": output_text,
-        "select_btn": select_btn,
-        "save_btn": save_btn,
-        "progress": progress,
-    }
-
-    yield root, status_var, output_text, ui_elements
-    root.destroy()
-
-
 @pytest.mark.parametrize(
     "error_type,error_msg,expected_status",
     [
@@ -306,3 +309,11 @@ def test_error_handling(mock_ui_elements, error_type, error_msg, expected_status
 
             # Verify validation was called
             mock_validate.assert_called_once_with("test.pdf")
+
+
+# TkInter checks - Remove if GitHub Action keeps throwing an error
+# - test_validate_pdf_file
+# - test_setup_converter
+# - test_convert_pdf_thread
+# - test_save_markdown
+# - test_error_handling
