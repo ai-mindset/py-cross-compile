@@ -1,54 +1,173 @@
-# py-cross-compile
+# Docling PDF to Markdown Converter
 
-[![Build](https://github.com/ai-mindset/py-cross-compile/actions/workflows/build.yml/badge.svg)](https://github.com/ai-mindset/py-cross-compile/actions/workflows/build.yml)
+[![Code Quality](https://github.com/yourusername/docling-pdf-converter/workflows/Code%20Quality/badge.svg)](https://github.com/yourusername/docling-pdf-converter/actions)
+[![Tests](https://github.com/yourusername/docling-pdf-converter/workflows/Tests/badge.svg)](https://github.com/yourusername/docling-pdf-converter/actions)
+[![PyInstaller Build and Release](https://github.com/yourusername/docling-pdf-converter/workflows/PyInstaller%20Build%20and%20Release/badge.svg)](https://github.com/yourusername/docling-pdf-converter/actions)
 
-Cross-platform Python application builder that creates native executables for Windows (.msi), macOS (.dmg), and Linux (.deb) using BeeWare and GitHub Actions.
+A GUI application for converting PDF documents to Markdown using Docling. This project primarily serves as an experiment in cross-compilation using GitHub Actions, demonstrating how to build Python applications for multiple platforms from a single Linux environment.
+
+## Project Goals
+
+1. **Cross-Compilation Experimentation**
+   - Build from Linux for Windows, macOS, and Linux targets
+   - Support both x86_64 and ARM64 architectures
+   - Create self-contained executables without target OS access
+   - Handle dependencies and resources across platforms
+   - Automate the release process
+
+2. **Technical Implementation**
+   - Modern Python practices (3.11+)
+   - Type-safe code with comprehensive testing
+   - Memory-efficient PDF processing
+   - User-friendly GUI interface
 
 ## Features
-- Single codebase, multiple platforms
-- Automated builds via GitHub Actions
-- Native installers for each OS
-- No need for Windows/macOS machines
-- Proper desktop integration on all platforms
 
-## Usage
-
-1. Clone template:
-```bash
-git clone https://github.com/<my gh handle>/py-cross-compile
-cd py-cross-compile
-```
-
-2. Update `pyproject.toml`:
-```toml
-[tool.briefcase]
-project_name = "YourApp"
-version = "0.1.0"
-bundle = "com.yourdomain"
-license = "MIT"
-author = "Your Name"
-author_email = "your.email@example.com"
-
-[tool.briefcase.app.yourapp]
-formal_name = "Your App"
-description = "Your app description"
-sources = ["src/yourapp"]
-requires = []
-```
-
-3. Add your code to `src/yourapp/`
-
-4. Push to GitHub:
- ```bash
-git push origin main
- ```
-
-5. Get your binaries from GitHub Actions artifacts
+- Cross-platform PDF to Markdown conversion
+- Table extraction in fast and accurate modes
+- Memory-efficient processing
+- Simple, native-looking GUI
+- Self-contained executables
 
 ## Requirements
-- Python 3.12+ (for Briefcase)
-- git (for cloning the template repo)
-- GitHub Actions (for automated builds)
+
+- Python 3.11 or newer
+- Operating System: Windows, macOS, or Linux
+
+## Installation
+
+### End Users
+
+Download the appropriate executable for your system from the [Releases](https://github.com/yourusername/docling-pdf-converter/releases) page:
+
+- Windows: `docling-converter-windows-x86_64.exe`
+- macOS:
+  - Intel: `docling-converter-macos-x86_64`
+  - Apple Silicon: `docling-converter-macos-arm64`
+- Linux:
+  - x86_64: `docling-converter-linux-x86_64`
+  - ARM64: `docling-converter-linux-aarch64`
+
+### Developers
+
+1. Clone the repository:
+```bash
+git clone https://github.com/yourusername/docling-pdf-converter.git
+cd docling-pdf-converter
+```
+
+2. Create a virtual environment:
+```bash
+python -m venv venv
+source venv/bin/activate  # On Windows: venv\Scripts\activate
+```
+
+3. Install dependencies:
+```bash
+pip install -e ".[dev]"
+```
+
+## Development
+
+### Code Quality
+```bash
+# Format and lint code
+ruff check .
+ruff format .
+
+# Type checking
+mypy src
+```
+
+### Testing
+```bash
+pytest
+```
+
+### Creating a Release
+
+1. Update version in `src/docling_converter/__about__.py`
+2. Update CHANGELOG.md
+3. Create and push a new tag:
+```bash
+git tag v1.0.0
+git push origin v1.0.0
+```
+
+The GitHub Action will automatically:
+- Run tests
+- Build executables for all platforms
+- Create a new release with the binaries
+
+## Project Structure
+```
+docling-pdf-converter/
+├── src/
+│   └── docling_converter/
+│       ├── __init__.py
+│       ├── __about__.py
+│       ├── app.py
+│       └── resources/
+│           └── .gitkeep
+├── tests/
+│   ├── __init__.py
+│   ├── conftest.py
+│   ├── test_app.py
+│   └── data/
+│       └── test.pdf
+├── .github/
+│   └── workflows/
+│       ├── code-quality.yml
+│       ├── tests.yml
+│       └── build-release.yml
+├── .gitignore
+├── CHANGELOG.md
+├── LICENSE
+├── pyproject.toml
+└── README.md
+```
+
+## Cross-Compilation Details
+
+### Build Process
+- Uses GitHub Actions with Ubuntu runners
+- Leverages QEMU for ARM64 builds
+- PyInstaller for executable creation
+- Automated resource bundling
+
+### Supported Platforms
+- Windows (x86_64)
+- macOS (x86_64, ARM64)
+- Linux (x86_64, ARM64)
+
+### CI/CD Pipeline
+1. **Code Quality** (`code-quality.yml`)
+   - Ruff (linting and formatting)
+   - MyPy (type checking)
+   - Security checks
+
+2. **Tests** (`tests.yml`)
+   - Multiple Python versions
+   - Multiple operating systems
+   - Coverage reporting
+
+3. **Build & Release** (`build-release.yml`)
+   - Cross-platform builds
+   - Automatic releases on tags
+   - Asset uploading
+
+## Contributing
+
+1. Fork the repository
+2. Create your feature branch (`git checkout -b feature/amazing-feature`)
+3. Run quality checks:
+```bash
+ruff check . && ruff format . && mypy src && pytest
+```
+4. Commit your changes (`git commit -m 'Add amazing feature'`)
+5. Push to the branch (`git push origin feature/amazing-feature`)
+6. Create a Pull Request
 
 ## License
-MIT
+
+MIT License - see [`LICENSE`](LICENSE) for details.

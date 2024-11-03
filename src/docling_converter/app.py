@@ -6,13 +6,13 @@ Handles PDF conversion with proper stream handling.
 import logging
 import os
 import sys
-import threading
 import tkinter as tk
 from functools import partial, wraps
 from io import BytesIO
 from pathlib import Path
-from tkinter import filedialog, font, messagebox, scrolledtext, ttk
-from typing import Any, Dict, Optional
+from tkinter import filedialog, messagebox, scrolledtext, ttk
+from tkinter.scrolledtext import ScrolledText
+from typing import Any
 
 from docling.datamodel.base_models import DocumentStream, InputFormat
 from docling.datamodel.pipeline_options import PdfPipelineOptions, TableFormerMode
@@ -29,7 +29,7 @@ logging.basicConfig(
 )
 
 # Type alias for UI elements dictionary
-UIElements = Dict[str, Any]
+UIElements = dict[str, Any]
 
 
 def handle_exceptions(func):
@@ -46,28 +46,30 @@ def handle_exceptions(func):
     return wrapper
 
 
-def validate_pdf_file(file_path: str) -> bool:
+def validate_pdf_file(file_path: str | Path) -> bool:
     """
     Validate if the file is a valid PDF.
 
     Args:
-        file_path: Path to the PDF file
+        file_path: Path to the PDF file (string or Path object)
 
     Returns:
-        bool: True if valid, False otherwise
+        bool: True if valid
 
     Raises:
         FileNotFoundError: If file doesn't exist
         ValueError: If file is not a PDF or is empty
     """
-    if not os.path.exists(file_path):
-        raise FileNotFoundError(f"File not found: {file_path}")
+    path = Path(file_path)
 
-    if not file_path.lower().endswith(".pdf"):
-        raise ValueError("Selected file is not a PDF")
+    if not path.exists():
+        raise FileNotFoundError(f"File not found: {path}")
 
-    if os.path.getsize(file_path) == 0:
-        raise ValueError("Selected PDF file is empty")
+    if path.suffix.lower() != ".pdf":
+        raise ValueError(f"File is not a PDF: {path}")
+
+    if path.stat().st_size == 0:
+        raise ValueError(f"PDF file is empty: {path}")
 
     return True
 
@@ -169,7 +171,7 @@ def conversion_complete(
         ui_elements["save_btn"].configure(state="normal")
         ui_elements["progress"].stop()
         ui_elements["progress"].grid_remove()
-    except Exception as e:
+    except Exception as e:  # noqa: BLE001
         logging.error(f"Error completing conversion: {str(e)}")
         messagebox.showerror("Error", "Failed to display conversion results")
 
@@ -224,7 +226,7 @@ def save_markdown(
                     f.write(content[i : i + chunk_size])
             status_var.set("File saved successfully!")
             logging.info(f"Markdown saved to: {file_path}")
-        except Exception as e:
+        except Exception as e:  # noqa: BLE001
             error_msg = f"Error saving file: {str(e)}"
             status_var.set(error_msg)
             logging.error(error_msg)
@@ -233,13 +235,13 @@ def save_markdown(
 
 @handle_exceptions
 def select_pdf(
-    accurate_mode: tk.BooleanVar, status_var: tk.StringVar, ui_elements: UIElements
+    accurate_mode: tk.BooleanVar, status_var: tk.StringVar, ui_elements: dict[str, Any]
 ) -> None:
     """
     Handle PDF file selection and initiate conversion.
 
     Args:
-        accurate_mode: BooleanVar for table conversion mode
+        accurate_mode: BooleanVar indicating if accurate mode is enabled
         status_var: StringVar for status updates
         ui_elements: Dictionary containing UI elements
     """
@@ -249,27 +251,24 @@ def select_pdf(
 
     if file_path:
         try:
+            # Validate file
             validate_pdf_file(file_path)
 
+            # Update UI for conversion
             status_var.set(f"Converting: {Path(file_path).name}")
             ui_elements["select_btn"].configure(state="disabled")
             ui_elements["save_btn"].configure(state="disabled")
             ui_elements["output_text"].delete("1.0", tk.END)
             ui_elements["progress"].grid()
-            ui_elements["progress"].start()
 
-            thread = threading.Thread(
-                target=convert_pdf_thread,
-                args=(file_path, accurate_mode.get(), status_var, ui_elements),
-                daemon=True,
-            )
-            thread.start()
+            # Start conversion
+            convert_pdf_thread(file_path, accurate_mode.get(), status_var, ui_elements)
 
-        except Exception as e:
-            error_msg = f"Error processing file: {str(e)}"
-            status_var.set(error_msg)
-            logging.error(error_msg)
-            messagebox.showerror("File Error", error_msg)
+        except (FileNotFoundError, ValueError, Exception) as e:
+            # Handle errors consistently
+            status_var.set(f"Error: {str(e)}")
+            ui_elements["select_btn"].configure(state="normal")
+            ui_elements["progress"].grid_remove()
 
 
 def create_ui() -> tk.Tk:
@@ -277,72 +276,66 @@ def create_ui() -> tk.Tk:
     Create and configure the main UI window.
 
     Returns:
-        tk.Tk: Configured root window
+        tk.Tk: Configured root window with all widgets
     """
-    try:
-        root = tk.Tk()
-        root.title("Docling PDF to Markdown Converter")
-        root.geometry("800x600")
+    root = tk.Tk()
+    root.title("Docling PDF to Markdown Converter")
+    root.geometry("800x600")
 
-        # Try to increase font size safely
-        try:
-            default_font = font.nametofont("TkDefaultFont")
-            current_size = int(default_font.cget("size"))
-            default_font.configure(size=current_size + 2)
-        except Exception as e:
-            logging.warning(f"Could not adjust font size: {str(e)}")
+    # Configure grid weight
+    root.grid_columnconfigure(0, weight=1)
+    root.grid_rowconfigure(2, weight=1)
 
-        # Configure grid weight
-        root.grid_columnconfigure(0, weight=1)
-        root.grid_rowconfigure(2, weight=1)
+    # Status label
+    status_var = tk.StringVar(value="Select a PDF file to convert")
+    status_label = ttk.Label(root, textvariable=status_var)
+    status_label.grid(row=0, column=0, padx=10, pady=5, sticky="w")
 
-        status_var = tk.StringVar(value="Select a PDF file to convert")
-        status_label = ttk.Label(root, textvariable=status_var)
-        status_label.grid(row=0, column=0, padx=10, pady=5, sticky="w")
+    # Button frame
+    btn_frame = ttk.Frame(root)
+    btn_frame.grid(row=1, column=0, padx=10, pady=5, sticky="ew")
 
-        btn_frame = ttk.Frame(root)
-        btn_frame.grid(row=1, column=0, padx=10, pady=5, sticky="ew")
+    # Dictionary to store UI elements
+    ui_elements = {"root": root}
 
-        ui_elements: UIElements = {"root": root}
+    # Accurate mode checkbox
+    accurate_mode = tk.BooleanVar(value=False)
+    accurate_check = ttk.Checkbutton(
+        btn_frame, text="Accurate Table Mode", variable=accurate_mode
+    )
+    accurate_check.pack(side=tk.LEFT, padx=5)
 
-        accurate_mode = tk.BooleanVar(value=False)
-        accurate_check = ttk.Checkbutton(
-            btn_frame, text="Accurate Table Mode", variable=accurate_mode
-        )
-        accurate_check.pack(side=tk.LEFT, padx=5)
+    # Select button
+    select_btn = ttk.Button(
+        btn_frame,
+        text="Select PDF",
+        command=lambda: select_pdf(accurate_mode, status_var, ui_elements),
+    )
+    select_btn.pack(side=tk.LEFT, padx=5)
+    ui_elements["select_btn"] = select_btn
 
-        select_btn = ttk.Button(
-            btn_frame,
-            text="Select PDF",
-            command=lambda: select_pdf(accurate_mode, status_var, ui_elements),
-        )
-        select_btn.pack(side=tk.LEFT, padx=5)
-        ui_elements["select_btn"] = select_btn
+    # Progress bar
+    progress = ttk.Progressbar(root, mode="indeterminate", length=300)
+    progress.grid(row=3, column=0, padx=10, pady=5, sticky="ew")
+    progress.grid_remove()  # Hidden by default
+    ui_elements["progress"] = progress
 
-        progress = ttk.Progressbar(root, mode="indeterminate", length=300)
-        progress.grid(row=3, column=0, padx=10, pady=5, sticky="ew")
-        progress.grid_remove()
-        ui_elements["progress"] = progress
+    # Output text area
+    output_text = ScrolledText(root, wrap=tk.WORD, width=80, height=20)
+    output_text.grid(row=2, column=0, padx=10, pady=5, sticky="nsew")
+    ui_elements["output_text"] = output_text
 
-        output_text = scrolledtext.ScrolledText(root, wrap=tk.WORD, width=80, height=20)
-        output_text.grid(row=2, column=0, padx=10, pady=5, sticky="nsew")
-        ui_elements["output_text"] = output_text
+    # Save button
+    save_btn = ttk.Button(
+        root,
+        text="Save Markdown",
+        command=lambda: save_markdown(output_text, status_var),
+        state="disabled",
+    )
+    save_btn.grid(row=4, column=0, padx=10, pady=5)
+    ui_elements["save_btn"] = save_btn
 
-        save_btn = ttk.Button(
-            root,
-            text="Save Markdown",
-            command=lambda: save_markdown(output_text, status_var),
-            state="disabled",
-        )
-        save_btn.grid(row=4, column=0, padx=10, pady=5)
-        ui_elements["save_btn"] = save_btn
-
-        return root
-
-    except Exception as e:
-        logging.critical(f"Failed to create UI: {str(e)}", exc_info=True)
-        messagebox.showerror("Critical Error", "Failed to create application window")
-        sys.exit(1)
+    return root
 
 
 def main() -> None:
@@ -350,7 +343,7 @@ def main() -> None:
     try:
         root = create_ui()
         root.mainloop()
-    except Exception as e:
+    except Exception as e:  # noqa: BLE001
         logging.critical(f"Application error: {str(e)}", exc_info=True)
         messagebox.showerror("Critical Error", "Application failed to start properly")
         sys.exit(1)
