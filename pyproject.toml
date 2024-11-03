@@ -3,9 +3,9 @@ requires = ["setuptools>=75.3.0", "wheel>=0.44.0"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "docling-pdf-converter"
+name = "docling_converter"
 version = "1.0.0"
-description = "PDF to Markdown converter using Docling with cross-compilation capabilities"
+description = "POC PDF to Markdown converter using Docling with cross-compilation capabilities"
 requires-python = ">=3.12"
 readme = "README.md"
 license = { file = "LICENSE" }
@@ -58,11 +58,11 @@ dev = [
 ]
 
 [project.urls]
-Homepage = "https://github.com/yourusername/docling-pdf-converter"
-Documentation = "https://github.com/yourusername/docling-pdf-converter#readme"
-Repository = "https://github.com/yourusername/docling-pdf-converter.git"
-Issues = "https://github.com/yourusername/docling-pdf-converter/issues"
-Changelog = "https://github.com/yourusername/docling-pdf-converter/blob/main/CHANGELOG.md"
+Homepage = "https://github.com/ai-mindset/py-cross-compile"
+Documentation = "https://github.com/ai-mindset/py-cross-compile#readme"
+Repository = "https://github.com/ai-mindset/py-cross-compile.git"
+Issues = "https://github.com/ai-mindset/py-cross-compile/issues"
+Changelog = "https://github.com/ai-mindset/py-cross-compile/blob/main/CHANGELOG.md"
 
 [project.scripts]
 docling-converter = "docling_converter.app:main"
