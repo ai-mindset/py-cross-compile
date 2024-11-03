@@ -44,7 +44,7 @@ def mock_ui():
 
     try:
         root.destroy()
-    except:
+    except Exception:  # noqa: BLE001, S110
         pass
 
 
