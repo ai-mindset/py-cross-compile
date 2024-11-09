@@ -1,0 +1,74 @@
+name: Linux and macOS Build
+
+on:
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  build:
+    name: Build for ${{ matrix.platform }}-${{ matrix.arch }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: ubuntu-latest
+            platform: linux
+            arch: x86_64
+          - os: ubuntu-latest
+            platform: linux
+            arch: aarch64
+          - os: ubuntu-latest
+            platform: macos
+            arch: x86_64
+          - os: ubuntu-latest
+            platform: macos
+            arch: arm64
+
+    runs-on: ${{ matrix.os }}
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: "pip"
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -e ".[dev]"
+
+      - name: Set up QEMU
+        if: matrix.arch == 'aarch64' || matrix.arch == 'arm64'
+        uses: docker/setup-qemu-action@v3
+        with:
+          platforms: arm64
+
+      - name: Install cross-compilation tools
+        if: matrix.arch == 'aarch64'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y gcc-aarch64-linux-gnu
+
+      - name: Build with PyInstaller
+        env:
+          PLATFORM: ${{ matrix.platform }}
+          ARCH: ${{ matrix.arch }}
+        run: |
+          pyinstaller --clean --onefile \
+            --name "pdf-converter-$PLATFORM-$ARCH" \
+            src/pdf_converter/app.py
+
+      - name: Create ZIP archive
+        run: |
+          cd dist
+          zip "pdf-converter-${{ matrix.platform }}-${{ matrix.arch }}.zip" "pdf-converter-${{ matrix.platform }}-${{ matrix.arch }}"
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: pdf-converter-${{ matrix.platform }}-${{ matrix.arch }}
+          path: dist/pdf-converter-${{ matrix.platform }}-${{ matrix.arch }}.zip
