@@ -69,24 +69,24 @@ jobs:
           ARCH: ${{ matrix.arch }}
         run: |
           pyinstaller --clean --onefile \
-            --name "docling-converter-$PLATFORM-$ARCH" \
-            --add-data "src/docling_converter/resources:docling_converter/resources" \
-            src/docling_converter/app.py
+            --name "pdf-converter-$PLATFORM-$ARCH" \
+            --add-data "src/pdf_converter/resources:pdf_converter/resources" \
+            src/pdf_converter/app.py
 
       - name: Create ZIP archive
         run: |
           cd dist
           if [ "${{ matrix.platform }}" = "windows" ]; then
-            zip "docling-converter-${{ matrix.platform }}-${{ matrix.arch }}.zip" "docling-converter-${{ matrix.platform }}-${{ matrix.arch }}.exe"
+            zip "pdf-converter-${{ matrix.platform }}-${{ matrix.arch }}.zip" "pdf-converter-${{ matrix.platform }}-${{ matrix.arch }}.exe"
           else
-            zip "docling-converter-${{ matrix.platform }}-${{ matrix.arch }}.zip" "docling-converter-${{ matrix.platform }}-${{ matrix.arch }}"
+            zip "pdf-converter-${{ matrix.platform }}-${{ matrix.arch }}.zip" "pdf-converter-${{ matrix.platform }}-${{ matrix.arch }}"
           fi
 
       - name: Upload build artifact
         uses: actions/upload-artifact@v4
         with:
-          name: docling-converter-${{ matrix.platform }}-${{ matrix.arch }}
-          path: dist/docling-converter-${{ matrix.platform }}-${{ matrix.arch }}.zip
+          name: pdf-converter-${{ matrix.platform }}-${{ matrix.arch }}
+          path: dist/pdf-converter-${{ matrix.platform }}-${{ matrix.arch }}.zip
 
   release:
     name: Create Release
@@ -106,6 +106,6 @@ jobs:
           prerelease: false
           generate_release_notes: true
           files: |
-            */docling-converter-*.zip
+            */pdf-converter-*.zip
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
