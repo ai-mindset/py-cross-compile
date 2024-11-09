@@ -39,6 +39,7 @@ dev = [
     "pytest-cov>=6.0.0",
     "pytest-asyncio>=0.24.0",
     "pytest-timeout>=2.3.1",
+    "pytest-xvfb>=3.0.0",  # Virtual display for GUI tests
 
     # Linting & Formatting
     "ruff>=0.7.2",
