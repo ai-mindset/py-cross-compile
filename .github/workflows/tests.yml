@@ -30,4 +30,4 @@ jobs:
 
       - name: Run tests
         run: |
-          pytest --cov=src/docling_converter --cov-report=xml
+          pytest --cov=src/pdf_converter --cov-report=xml
