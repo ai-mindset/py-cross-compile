@@ -50,7 +50,7 @@ dev = [
     # Security
     "bandit>=1.7.10",
     "safety",         # Skip pinning a version, to avoid dependency clashing
-    "jinja2>=3.1.4",  # pin here (transitive dependency) to secure version
+    "jinja2>=3.1.1",  # pin here (transitive dependency) to secure version
 
     # REPL
     "ipython",
