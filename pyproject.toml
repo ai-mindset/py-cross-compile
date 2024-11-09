@@ -10,7 +10,7 @@ requires-python = ">=3.12"
 readme = "README.md"
 license = { file = "LICENSE" }
 authors = [
-    { name = "Your Name", email = "your.email@example.com" } # Intentionally leaving this empty
+    { name = "Your Name", email = "your.email@example.com" }, # Intentionally leaving this empty
 ]
 keywords = ["pdf", "markdown", "converter", "pypdf", "cross-compilation"]
 classifiers = [
@@ -30,6 +30,7 @@ classifiers = [
 dependencies = [
     "pypdf>=5.1.0",
     "typing-extensions>=4.9.0",
+    "jinja2>=3.1.3",            # pin to secure version
 ]
 
 [project.optional-dependencies]
@@ -39,7 +40,7 @@ dev = [
     "pytest-cov>=6.0.0",
     "pytest-asyncio>=0.24.0",
     "pytest-timeout>=2.3.1",
-    "pytest-xvfb>=3.0.0",  # Virtual display for GUI tests
+    "pytest-xvfb>=3.0.0",     # Virtual display for GUI tests
 
     # Linting & Formatting
     "ruff>=0.7.2",
@@ -52,10 +53,10 @@ dev = [
 
     # Security
     "bandit>=1.7.10",
-    "safety",  # Skip pinning a version, to avoid dependency clashing
+    "safety",         # Skip pinning a version, to avoid dependency clashing
 
     # REPL
-    "ipython"
+    "ipython",
 ]
 
 [project.urls]
@@ -69,7 +70,7 @@ Changelog = "https://github.com/ai-mindset/py-cross-compile/blob/main/CHANGELOG.
 docling-converter = "pdf_converter.app:main"
 
 [tool.setuptools]
-package-dir = {"" = "src"}
+package-dir = { "" = "src" }
 packages = ["pdf_converter"]
 
 [tool.setuptools.package-data]
@@ -89,11 +90,7 @@ addopts = """
 testpaths = ["tests"]
 python_files = "test_*.py"
 pythonpath = ["."]
-filterwarnings = [
-    "error",
-    "ignore::DeprecationWarning",
-    "ignore::UserWarning",
-]
+filterwarnings = ["error", "ignore::DeprecationWarning", "ignore::UserWarning"]
 
 [tool.ruff]
 target-version = "py312"
@@ -102,12 +99,7 @@ src = ["src", "tests"]
 
 [tool.ruff.lint]
 select = ["E", "F", "B", "Q", "I", "N", "W", "C90", "UP", "ASYNC", "S", "BLE"]
-ignore = [
-    "D203",
-    "D212",
-    "ANN101",
-    "ANN102",
-]
+ignore = ["D203", "D212", "ANN101", "ANN102"]
 fixable = ["I", "F", "W", "UP", "Q"]
 unfixable = ["B"]
 
