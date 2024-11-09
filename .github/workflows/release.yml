@@ -1,12 +1,17 @@
 name: Release
 
 on:
-  push:
-    branches:
-      - main
+  workflow_run:
+    workflows: ["Unix Build", "Windows Build"]
+    types:
+      - completed
+    branches: [main]
 
 jobs:
   release:
+    if: |
+      github.event.workflow_run.conclusion == 'success' &&
+      !contains(github.event.workflow_run.head_branch, 'dependabot/')
     name: Create Release
     runs-on: ubuntu-latest
     steps:

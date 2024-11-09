@@ -1,12 +1,15 @@
-name: Linux and macOS Build
+name: Unix Build
 
 on:
-  pull_request:
+  workflow_run:
+    workflows: ["Tests"]
+    types:
+      - completed
     branches: [main]
-  workflow_dispatch:
 
 jobs:
   build:
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
     name: Build for ${{ matrix.platform }}-${{ matrix.arch }}
     strategy:
       fail-fast: false
