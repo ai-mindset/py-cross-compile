@@ -8,7 +8,6 @@ from unittest.mock import Mock, patch
 
 import pytest
 from docling.document_converter import DocumentConverter
-
 from docling_converter.app import (
     conversion_complete,
     conversion_error,
