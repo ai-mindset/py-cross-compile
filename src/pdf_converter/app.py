@@ -1,12 +1,44 @@
 """PDF to Text converter using pypdf."""
 
+import sys
 import tkinter as tk
 from pathlib import Path
 from tkinter import filedialog, ttk
 from tkinter.scrolledtext import ScrolledText
-from typing import Any
+from typing import Any, Final
 
 from pypdf import PdfReader
+
+
+def get_resource_path() -> Path:
+    """Get the absolute path to the resources directory.
+
+    Returns:
+        Path: Absolute path to resources directory
+    """
+    if hasattr(sys, "_MEIPASS"):
+        # PyInstaller creates a temp folder and stores path in _MEIPASS
+        base_path = Path(sys._MEIPASS)
+    else:
+        # Normal Python installation
+        base_path = Path(__file__).resolve().parent
+
+    return base_path / "resources"
+
+
+RESOURCE_PATH: Final[Path] = get_resource_path()
+
+
+def get_resource_file(filename: str) -> Path:
+    """Get path to a specific resource file.
+
+    Args:
+        filename: Name of the resource file
+
+    Returns:
+        Path: Absolute path to the resource file
+    """
+    return RESOURCE_PATH / filename
 
 
 def validate_pdf_file(file_path: str | Path) -> bool:
@@ -196,6 +228,13 @@ def create_ui() -> tk.Tk:
     )
     save_btn.grid(row=4, column=0, padx=10, pady=5)
     ui_elements["save_btn"] = save_btn  # type: ignore
+
+    # Example of using resources
+    info_file = get_resource_file(".gitkeep")
+    if info_file.exists():
+        with info_file.open() as f:
+            info_text = f.read()
+            ttk.Label(root, text=info_text).pack()
 
     return root
 
