@@ -1,10 +1,10 @@
 # PDF to Markdown Converter
 
 [![Code Quality](https://github.com/ai-mindset/py-cross-compile/actions/workflows/code-quality.yml/badge.svg)](https://github.com/ai-mindset/py-cross-compile/actions/workflows/code-quality.yml)
-[![Linux and macOS Build](https://github.com/ai-mindset/py-cross-compile/actions/workflows/unix-build.yml/badge.svg)](https://github.com/ai-mindset/py-cross-compile/actions/workflows/unix-build.yml)
+[![Unix Build](https://github.com/ai-mindset/py-cross-compile/actions/workflows/unix-build.yml/badge.svg)](https://github.com/ai-mindset/py-cross-compile/actions/workflows/unix-build.yml)
 [![Windows Build](https://github.com/ai-mindset/py-cross-compile/actions/workflows/build-win.yml/badge.svg)](https://github.com/ai-mindset/py-cross-compile/actions/workflows/build-win.yml)
 [![Tests](https://github.com/ai-mindset/py-cross-compile/actions/workflows/tests.yml/badge.svg)](https://github.com/ai-mindset/py-cross-compile/actions/workflows/tests.yml)
-<!-- Placeholder for release badge -->
+[![Release](https://github.com/ai-mindset/py-cross-compile/actions/workflows/release.yml/badge.svg)](https://github.com/ai-mindset/py-cross-compile/actions/workflows/release.yml)
 [![Ruff](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ruff/main/assets/badge/v2.json)](https://github.com/astral-sh/ruff)
 
 

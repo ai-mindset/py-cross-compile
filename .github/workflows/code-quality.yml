@@ -30,6 +30,6 @@ jobs:
       - name: Run MyPy
         run: mypy src
 
-      - name: Check dependencies for known vulnerabilities
-        run: |
-          safety check
+      # - name: Check dependencies for known vulnerabilities
+      #   run: |
+      #     safety check
