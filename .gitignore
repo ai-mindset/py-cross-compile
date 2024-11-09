@@ -1,4 +1,5 @@
 push.sh
+**/.ruff_cache/
 **/.vscode/
 
 # Byte-compiled / optimized / DLL files

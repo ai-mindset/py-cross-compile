@@ -3,16 +3,16 @@ requires = ["setuptools>=75.3.0", "wheel>=0.44.0"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "docling_converter"
+name = "pdf_converter"
 version = "1.0.0"
-description = "POC PDF to Markdown converter using Docling with cross-compilation capabilities"
+description = "GUI application for converting PDF to text with cross-compilation capabilities"
 requires-python = ">=3.12"
 readme = "README.md"
 license = { file = "LICENSE" }
 authors = [
-    { name = "Your Name", email = "your.email@example.com" }
+    { name = "Your Name", email = "your.email@example.com" } # Intentionally leaving this empty
 ]
-keywords = ["pdf", "markdown", "converter", "docling", "cross-compilation"]
+keywords = ["pdf", "markdown", "converter", "pypdf", "cross-compilation"]
 classifiers = [
     "Development Status :: 4 - Beta",
     "Environment :: Desktop Environment",
@@ -28,7 +28,7 @@ classifiers = [
 ]
 
 dependencies = [
-    "docling", # Skip pinning a version, to avoid dependency clashing
+    "pypdf>=5.1.0",
     "typing-extensions>=4.9.0",
 ]
 
@@ -65,11 +65,11 @@ Issues = "https://github.com/ai-mindset/py-cross-compile/issues"
 Changelog = "https://github.com/ai-mindset/py-cross-compile/blob/main/CHANGELOG.md"
 
 [project.scripts]
-docling-converter = "docling_converter.app:main"
+docling-converter = "pdf_converter.app:main"
 
 [tool.setuptools]
 package-dir = {"" = "src"}
-packages = ["docling_converter"]
+packages = ["pdf_converter"]
 
 [tool.setuptools.package-data]
 "docling_converter" = ["resources/*"]
