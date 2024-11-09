@@ -79,12 +79,19 @@ jobs:
           echo "PDF converter directory contents:"
           ls -la src/pdf_converter/
 
+      - name: Install Wine for Windows cross-compilation
+        if: matrix.platform == 'windows'
+        run: |
+          sudo dpkg --add-architecture i386
+          sudo apt-get update
+          sudo apt-get install -y wine wine32 wine64
+
       - name: Build with PyInstaller
         env:
           PLATFORM: ${{ matrix.platform }}
           ARCH: ${{ matrix.arch }}
         run: |
-          # Create spec file with platform-specific settings
+          # Create spec file
           echo "# -*- mode: python ; coding: utf-8 -*-" > build.spec
           echo "block_cipher = None" >> build.spec
           echo "a = Analysis(['src/pdf_converter/app.py']," >> build.spec
@@ -92,10 +99,6 @@ jobs:
           echo "    binaries=[]," >> build.spec
           echo "    datas=[]," >> build.spec
           echo "    hiddenimports=[]," >> build.spec
-          if [ "$PLATFORM" = "windows" ]; then
-            # Windows-specific configuration
-            echo "    target_platform='win64'," >> build.spec
-          fi
           echo "    hookspath=[]," >> build.spec
           echo "    hooksconfig={}," >> build.spec
           echo "    runtime_hooks=[]," >> build.spec
@@ -112,18 +115,21 @@ jobs:
           echo "    a.datas," >> build.spec
           echo "    []," >> build.spec
           echo "    name='pdf-converter-$PLATFORM-$ARCH'," >> build.spec
-          if [ "$PLATFORM" = "windows" ]; then
-            # Windows-specific EXE settings
-            echo "    target_platform='win64'," >> build.spec
-          fi
           echo "    debug=False," >> build.spec
+          echo "    bootloader_ignore_signals=False," >> build.spec
           echo "    strip=False," >> build.spec
           echo "    upx=True," >> build.spec
-          echo "    console=True)" >> build.spec
+          echo "    upx_exclude=[]," >> build.spec
+          echo "    runtime_tmpdir=None," >> build.spec
+          echo "    console=True," >> build.spec
+          echo "    disable_windowed_traceback=False," >> build.spec
+          echo "    target_arch=None," >> build.spec
+          echo "    codesign_identity=None," >> build.spec
+          echo "    entitlements_file=None)" >> build.spec
 
-          # Build using platform-specific settings
+          # Platform-specific build
           if [ "$PLATFORM" = "windows" ]; then
-            pyinstaller --clean --target-platform win64 build.spec
+            wine pyinstaller --clean build.spec
           else
             pyinstaller --clean build.spec
           fi
