@@ -84,10 +84,44 @@ jobs:
           PLATFORM: ${{ matrix.platform }}
           ARCH: ${{ matrix.arch }}
         run: |
-          pyinstaller --clean --onefile \
-            --name "pdf-converter-$PLATFORM-$ARCH" \
-            --add-data "src/pdf_converter/resources/*:pdf_converter/resources" \
-            src/pdf_converter/app.py
+          # Create spec file
+          echo "# -*- mode: python ; coding: utf-8 -*-" > build.spec
+          echo "block_cipher = None" >> build.spec
+          echo "a = Analysis(['src/pdf_converter/app.py']," >> build.spec
+          echo "    pathex=[]," >> build.spec
+          echo "    binaries=[]," >> build.spec
+          echo "    datas=[]," >> build.spec
+          echo "    hiddenimports=[]," >> build.spec
+          echo "    hookspath=[]," >> build.spec
+          echo "    hooksconfig={}," >> build.spec
+          echo "    runtime_hooks=[]," >> build.spec
+          echo "    excludes=[]," >> build.spec
+          echo "    win_no_prefer_redirects=False," >> build.spec
+          echo "    win_private_assemblies=False," >> build.spec
+          echo "    cipher=block_cipher," >> build.spec
+          echo "    noarchive=False)" >> build.spec
+          echo "pyz = PYZ(a.pure, a.zipped_data, cipher=block_cipher)" >> build.spec
+          echo "exe = EXE(pyz," >> build.spec
+          echo "    a.scripts," >> build.spec
+          echo "    a.binaries," >> build.spec
+          echo "    a.zipfiles," >> build.spec
+          echo "    a.datas," >> build.spec
+          echo "    []," >> build.spec
+          echo "    name='pdf-converter-$PLATFORM-$ARCH'," >> build.spec
+          echo "    debug=False," >> build.spec
+          echo "    bootloader_ignore_signals=False," >> build.spec
+          echo "    strip=False," >> build.spec
+          echo "    upx=True," >> build.spec
+          echo "    upx_exclude=[]," >> build.spec
+          echo "    runtime_tmpdir=None," >> build.spec
+          echo "    console=True," >> build.spec
+          echo "    disable_windowed_traceback=False," >> build.spec
+          echo "    target_arch=None," >> build.spec
+          echo "    codesign_identity=None," >> build.spec
+          echo "    entitlements_file=None)" >> build.spec
+
+          # Build using spec file
+          pyinstaller --clean build.spec
 
       - name: Create ZIP archive
         run: |
