@@ -177,16 +177,16 @@ def create_ui() -> tk.Tk:
         command=lambda: select_pdf(accurate_mode, status_var, ui_elements),
     )
     select_btn.pack(side=tk.LEFT, padx=5)
-    ui_elements["select_btn"] = select_btn
+    ui_elements["select_btn"] = select_btn  # type: ignore
 
     progress = ttk.Progressbar(root, mode="indeterminate", length=300)
     progress.grid(row=3, column=0, padx=10, pady=5, sticky="ew")
     progress.grid_remove()
-    ui_elements["progress"] = progress
+    ui_elements["progress"] = progress  # type: ignore
 
     output_text = ScrolledText(root, wrap=tk.WORD, width=80, height=20)
     output_text.grid(row=2, column=0, padx=10, pady=5, sticky="nsew")
-    ui_elements["output_text"] = output_text
+    ui_elements["output_text"] = output_text  # type: ignore
 
     save_btn = ttk.Button(
         root,
@@ -195,7 +195,7 @@ def create_ui() -> tk.Tk:
         state="disabled",
     )
     save_btn.grid(row=4, column=0, padx=10, pady=5)
-    ui_elements["save_btn"] = save_btn
+    ui_elements["save_btn"] = save_btn  # type: ignore
 
     return root
 
