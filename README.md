@@ -1,4 +1,4 @@
-# Docling PDF to Markdown Converter
+# PDF to Markdown Converter
 
 [![Code Quality](https://github.com/ai-mindset/py-cross-compile/actions/workflows/code-quality.yml/badge.svg)](https://github.com/ai-mindset/py-cross-compile/actions/workflows/code-quality.yml)
 [![PyInstaller Build and Release](https://github.com/ai-mindset/py-cross-compile/actions/workflows/build-release.yml/badge.svg)](https://github.com/ai-mindset/py-cross-compile/actions/workflows/build-release.yml)
@@ -6,7 +6,7 @@
 [![Ruff](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ruff/main/assets/badge/v2.json)](https://github.com/astral-sh/ruff)
 
 
-A GUI application for converting PDF documents to Markdown using Docling. This project primarily serves as an experiment in cross-compilation using GitHub Actions, demonstrating how to build Python applications for multiple platforms from a single Linux environment.
+A GUI application for converting PDF documents to Markdown using pypdf. This project primarily serves as an experiment in cross-compilation using GitHub Actions, demonstrating how to build Python applications for multiple platforms from a single Linux environment.
 
 ## Project Goals
 
@@ -40,7 +40,7 @@ A GUI application for converting PDF documents to Markdown using Docling. This p
 
 ### End Users
 
-Download the appropriate executable for your system from the [Releases](https://github.com/yourusername/docling-pdf-converter/releases) page:
+Download the appropriate executable for your system from the [Releases](https://github.com/ai-mindset/pdf_converter/releases) page:
 
 - Windows: `docling-converter-windows-x86_64.exe`
 - macOS:
@@ -54,8 +54,8 @@ Download the appropriate executable for your system from the [Releases](https://
 
 1. Clone the repository:
 ```bash
-git clone https://github.com/yourusername/docling-pdf-converter.git
-cd docling-pdf-converter
+git clone https://github.com/ai-mindset/pdf_converter.git
+cd pdf_converter
 ```
 
 2. Create a virtual environment:
@@ -88,7 +88,7 @@ pytest
 
 ### Creating a Release
 
-1. Update version in `src/docling_converter/__about__.py`
+1. Update version in `src/pdf_converter/__about__.py`
 2. Update CHANGELOG.md
 3. Create and push a new tag:
 ```bash
@@ -103,9 +103,9 @@ The GitHub Action will automatically:
 
 ## Project Structure
 ```
-docling-pdf-converter/
+pdf_converter/
 ├── src/
-│   └── docling_converter/
+│   └── pdf_converter/
 │       ├── __init__.py
 │       ├── __about__.py
 │       ├── app.py
