@@ -44,13 +44,13 @@ A GUI application for converting PDF documents to Markdown using pypdf. This pro
 
 Download the appropriate executable for your system from the [Releases](https://github.com/ai-mindset/pdf_converter/releases) page:
 
-- Windows: `docling-converter-windows-x86_64.exe`
+- Windows: `pdf-converter-windows-x86_64.exe`
 - macOS:
-  - Intel: `docling-converter-macos-x86_64`
-  - Apple Silicon: `docling-converter-macos-arm64`
+  - Intel: `pdf-converter-macos-x86_64`
+  - Apple Silicon: `pdf-converter-macos-arm64`
 - Linux:
-  - x86_64: `docling-converter-linux-x86_64`
-  - ARM64: `docling-converter-linux-aarch64`
+  - x86_64: `pdf-converter-linux-x86_64`
+  - ARM64: `pdf-converter-linux-aarch64`
 
 ### Developers
 
