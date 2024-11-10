@@ -1,4 +1,4 @@
-name: Windows Build
+name: Windows Build and Release
 
 on:
   workflow_run:
@@ -36,8 +36,24 @@ jobs:
         run: |
           Compress-Archive -Path "dist/pdf-converter.exe" -DestinationPath "dist/pdf-converter-windows.zip"
 
-      - name: Upload artifact
-        uses: actions/upload-artifact@v4
+      # - name: Upload artifact
+      #   uses: actions/upload-artifact@v4
+      #   with:
+      #     name: pdf-converter-windows
+      #     path: dist/pdf-converter-windows.zip
+      
+      - name: Generate version
+        id: version
+        run: echo "version=$(date +'%Y.%m.%d-%H%M')" >> $env:GITHUB_OUTPUT
+
+      - name: Create Release
+        uses: softprops/action-gh-release@v1
         with:
-          name: pdf-converter-windows
-          path: dist/pdf-converter-windows.zip
+          name: Release ${{ steps.version.outputs.version }}
+          tag_name: v${{ steps.version.outputs.version }}
+          draft: false
+          prerelease: false
+          generate_release_notes: true
+          files: dist/pdf-converter-windows.zip
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
