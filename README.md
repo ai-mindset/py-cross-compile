@@ -1,10 +1,9 @@
 # PDF to Markdown Converter
 
 [![Code Quality](https://github.com/ai-mindset/py-cross-compile/actions/workflows/code-quality.yml/badge.svg)](https://github.com/ai-mindset/py-cross-compile/actions/workflows/code-quality.yml)
-[![Unix Build](https://github.com/ai-mindset/py-cross-compile/actions/workflows/unix-build.yml/badge.svg)](https://github.com/ai-mindset/py-cross-compile/actions/workflows/unix-build.yml)
-[![Windows Build](https://github.com/ai-mindset/py-cross-compile/actions/workflows/build-win.yml/badge.svg)](https://github.com/ai-mindset/py-cross-compile/actions/workflows/build-win.yml)
 [![Tests](https://github.com/ai-mindset/py-cross-compile/actions/workflows/tests.yml/badge.svg)](https://github.com/ai-mindset/py-cross-compile/actions/workflows/tests.yml)
-[![Release](https://github.com/ai-mindset/py-cross-compile/actions/workflows/release.yml/badge.svg)](https://github.com/ai-mindset/py-cross-compile/actions/workflows/release.yml)
+[![Unix Build and Release](https://github.com/ai-mindset/py-cross-compile/actions/workflows/unix-build.yml/badge.svg)](https://github.com/ai-mindset/py-cross-compile/actions/workflows/unix-build.yml)
+[![Windows Build and Release](https://github.com/ai-mindset/py-cross-compile/actions/workflows/win-build.yml/badge.svg)](https://github.com/ai-mindset/py-cross-compile/actions/workflows/win-build.yml)
 [![Ruff](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ruff/main/assets/badge/v2.json)](https://github.com/astral-sh/ruff)
 
 
