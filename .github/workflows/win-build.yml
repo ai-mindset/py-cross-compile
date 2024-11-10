@@ -32,28 +32,38 @@ jobs:
             --windowed `
             src/pdf_converter/app.py
 
-      - name: Create ZIP archive
-        run: |
-          Compress-Archive -Path "dist/pdf-converter.exe" -DestinationPath "dist/pdf-converter-windows.zip"
+      # - name: Create ZIP archive
+      #   run: |
+      #     Compress-Archive -Path "dist/pdf-converter.exe" -DestinationPath "dist/pdf-converter-windows.zip"
 
       # - name: Upload artifact
       #   uses: actions/upload-artifact@v4
       #   with:
       #     name: pdf-converter-windows
       #     path: dist/pdf-converter-windows.zip
-      
+
+      - name: Create ZIP archive
+        shell: pwsh
+        run: |
+          cd dist
+          if (Test-Path "pdf-converter.exe") {
+            Compress-Archive -Path "pdf-converter.exe" -DestinationPath "pdf-converter-windows.zip"
+            echo "dist_empty=false" | Out-File -FilePath $env:GITHUB_ENV -Append
+          } else {
+            echo "No executable found in dist/"
+            echo "dist_empty=true" | Out-File -FilePath $env:GITHUB_ENV -Append
+          }
+
       - name: Generate version
         id: version
-        run: echo "version=$(date +'%Y.%m.%d-%H%M')" >> $env:GITHUB_OUTPUT
+        shell: bash
+        run: echo "version=$(date +'%Y.%m.%d-%H%M')" >> $GITHUB_OUTPUT
 
-      - name: Create Release
-        uses: softprops/action-gh-release@v1
+      - name: Upload Release
+        if: env.dist_empty == 'false'
+        uses: svenstaro/upload-release-action@v2
         with:
-          name: Release ${{ steps.version.outputs.version }}
-          tag_name: v${{ steps.version.outputs.version }}
-          draft: false
-          prerelease: false
-          generate_release_notes: true
-          files: dist/pdf-converter-windows.zip
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          file: dist/pdf-converter-windows.zip
+          tag: v${{ steps.version.outputs.version }}
+          overwrite: true
