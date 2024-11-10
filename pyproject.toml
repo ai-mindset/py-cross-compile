@@ -9,9 +9,7 @@ description = "GUI application for converting PDF to text with cross-compilation
 requires-python = ">=3.12"
 readme = "README.md"
 license = { file = "LICENSE" }
-authors = [
-    { name = "Your Name", email = "your.email@example.com" }, # Intentionally leaving this empty
-]
+authors = [{ name = "Your Name", email = "your.email@example.com" }]
 keywords = ["pdf", "markdown", "converter", "pypdf", "cross-compilation"]
 classifiers = [
     "Development Status :: 4 - Beta",
