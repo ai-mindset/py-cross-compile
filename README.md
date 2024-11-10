@@ -41,7 +41,7 @@ A GUI application for converting PDF documents to Markdown using pypdf. This pro
 
 ### End Users
 
-Download the appropriate executable for your system from the [Releases](https://github.com/ai-mindset/pdf_converter/releases) page:
+Download the appropriate executable for your system from the [Releases](https://github.com/ai-mindset/py-cross-compile/releases) page:
 
 - Windows: `pdf-converter-windows-x86_64.exe`
 - macOS:
@@ -55,8 +55,8 @@ Download the appropriate executable for your system from the [Releases](https://
 
 1. Clone the repository:
 ```bash
-git clone https://github.com/ai-mindset/pdf_converter.git
-cd pdf_converter
+git clone https://github.com/ai-mindset/py-cross-compile.git
+cd py-cross-compile
 ```
 
 2. Create a virtual environment:
@@ -89,7 +89,7 @@ pytest
 
 ### Creating a Release
 
-1. Update version in `src/pdf_converter/__about__.py`
+1. Update version in `pyproject.toml`
 2. Update CHANGELOG.md
 3. Create and push a new tag:
 ```bash
@@ -108,23 +108,19 @@ pdf_converter/
 ├── src/
 │   └── pdf_converter/
 │       ├── __init__.py
-│       ├── __about__.py
 │       ├── app.py
 │       └── resources/
 │           └── .gitkeep
 ├── tests/
 │   ├── __init__.py
-│   ├── conftest.py
-│   ├── test_app.py
-│   └── data/
-│       └── test.pdf
+│   └── test_app.py
 ├── .github/
 │   └── workflows/
 │       ├── code-quality.yml
 │       ├── tests.yml
-│       └── build-release.yml
+│       ├── win-build.yml
+│       └── unix-build.yml
 ├── .gitignore
-├── CHANGELOG.md
 ├── LICENSE
 ├── pyproject.toml
 └── README.md
@@ -147,15 +143,21 @@ pdf_converter/
 1. **Code Quality** (`code-quality.yml`)
    - Ruff (linting and formatting)
    - MyPy (type checking)
-   - Security checks
+   - Security checks (disabled for now)
 
 2. **Tests** (`tests.yml`)
    - Multiple Python versions
    - Multiple operating systems
    - Coverage reporting
 
-3. **Build & Release** (`build-release.yml`)
-   - Cross-platform builds
+3. **Unix Build & Release** (`unix-build.yml`)
+   - MacOS and Linux x86-64 and ARM builds
+   - Automatic releases on tags
+   - Asset uploading
+
+
+4. **Windows Build & Release** (`win-build.yml`)
+   - Windows x86_64 builds
    - Automatic releases on tags
    - Asset uploading
 
